@@ -472,7 +472,7 @@
                     {{ variant.title }} - {{ variant.price | money }}
                   </option>
                 {% endfor %}
-              </select>
+              </select> 
               {%- unless product.has_only_default_variant -%}
                 {%- if block.settings.picker_type == 'button' -%}
                   <variant-radios
