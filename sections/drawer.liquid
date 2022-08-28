@@ -1,0 +1,80 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+<section class="drawer" id="drawer-name" data-drawer-target >
+  <div class="drawer__overlay" data-drawer-close tabindex="-1"></div>
+  <div class="drawer__wrapper">
+    <div class="drawer__header">
+      <div class="drawer__title" id="drawer_items_count">
+        Drawer Title Here {{cart.item_count}}
+      </div>
+      <button class="drawer__close" data-drawer-close aria-label="Close Drawer"></button>
+    </div>
+    <div class="drawer__content">
+      <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
+        Move to complete cart
+      </a>
+      <div id="drawer__cart_items"></div>
+      <div id="drawer__cart_bottom">
+        <h4>Total amount: <span id="drawer_total_amount"></span></h4>
+        <a href="/checkout" class="btn cart__continue-btn" id="drawer_checkout_btn">Checkout </a>
+      </div>
+      Drawer Content Here
+    </div>
+  </div>
+</section>
+<script type="text/javascript">
+  $(document).ready(function() {
+    
+  }); 
+  function removeItem(variantId) {
+    console.log('variantId', variantId)
+    // let variantId = cartBtn.getAttribute("data-variant-id");
+    $.ajax({
+      type: "POST",
+      url: "/cart/change.js",
+      dataType: "json",
+      data: {
+        id: parseFloat(variantId),
+        quantity: 0,
+      },
+    }).then((data) => {
+      console.log(data,'removedItem');
+      // cartBtn.textContent = "Add to cart";
+      // cartBtn.removeAttribute("data-variant-id");
+      updateCart();
+    });
+  }
+  function updateCart() {
+    fetch(window.Shopify.routes.root+'cart.js')
+      .then((resp) => resp.json())
+      .then((data) => {
+        console.log('updatedcart', data, window.Shopify.routes.root);
+        var completeHtml = '';
+        var totalPrice = Shopify.formatMoney(data.total_price, '{{ shop.money_with_currency_format }}');
+        if(data.items.length > 0) {
+          data.items.forEach(function(product, index) {
+            // console.log ( {{ product.line_price | money | json }} );
+            var price = Shopify.formatMoney(product.price, '{{ shop.money_with_currency_format }}');
+            console.log(product.line_price, price);
+            // <img src='"+product.featured_image.url+"'>     
+            var removeUrl = '/cart/change?line='+product.id+'&quantity=0';
+            var product_url = '<a href="'+product.url+'">'+product.title+'</a>';
+            var options = [];
+            var variants = product.variant_options;
+            completeHtml += "<h5>"+product.title+"</h5><p>"+product.quantity+" * "+price+"</p><p><a href='#' onclick='removeItem("+product.id+")' data-variant='"+product.variant_id+"' class='delete'>Delete</a></p>"; 
+            console.log('variants',variants);   
+          });
+          document.getElementById('drawer__cart_items').innerHTML = completeHtml;    
+        } else {
+          var totalPrice = Shopify.formatMoney(0, '{{ shop.money_with_currency_format }}');
+          document.getElementById('drawer__cart_items').innerHTML = "<p>Cart is empty</p>";        
+          document.getElementById('drawer_checkout_btn').setAttribute('disabled','disabled');        
+          document.getElementById('drawer_checkout_btn').style.pointerEvents = none;   
+        }      
+        document.getElementById('drawer_total_amount').innerHTML = totalPrice;    
+      });
+    
+  }
+  updateCart();
+
+  
+</script>
