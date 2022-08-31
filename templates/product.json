@@ -123,7 +123,7 @@
       ],
       "settings": {
         "enable_sticky_info": true,
-        "media_position": "left",
+        "media_position": "right",
         "gallery_layout": "thumbnail_slider",
         "media_size": "small",
         "mobile_thumbnails": "hide",
