@@ -886,6 +886,9 @@
             "heading": {
               "label": "Heading"
             },
+            "phoneno": {
+              "label": "Phone No"
+            },
             "subtext": {
               "label": "Subtext"
             }
